@@ -10,7 +10,10 @@ import com.example.demo.collection.Birds;
 public interface BirdRepository extends MongoRepository<Birds, String>{
 
     @Query("{name:'?0'}")
-    List<Birds> findBirdByName(String name);
+    List<Birds> findBirdByName(String name); 
+    
+    @Query("{name : { $regex: ?0 } }")
+    List<Birds> findBirdByRegExName(String domain);
  
     @Query("{color:'?0'}")
     List<Birds> findBirdByColor(String color);
