@@ -60,6 +60,7 @@ public class RestContoller {
 		return new ResponseEntity<Object>(birds, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByParams(@RequestParam(value = "territory", required = false) String territory,
@@ -67,6 +68,7 @@ public class RestContoller {
 			@RequestParam(value = "trail", required = false) String trail,
 			@RequestParam(value = "value", required = false) String value) {
 
+		System.out.println("Fetching bird by params territory = " + territory);
 		List<Birds> birds = birdServiceImpl.findByCriteria(territory, location, trail, value);
 //		List<Birds> birds = null;
 //		if (territory == null && location == null && trail == null && value == null) {
