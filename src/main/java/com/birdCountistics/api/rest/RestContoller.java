@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,25 +29,29 @@ public class RestContoller {
 		return "API is up and running";
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getAll() {
+
+		System.out.println("Fetching all birds");
 
 		List<Birds> birds = birdServiceImpl.findAll();
 
 		return new ResponseEntity<Object>(birds, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/getByName", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByName(@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "id", required = false) String id) {
 
+		System.out.println("Fetching bird by name");
 		List<Birds> birds = null;
 		if (name != null && id != null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Name or ID Accepted, Both not allowed");
 		} else if (name != null) {
-			System.out.println("Finding first by Name");
 			birds = birdServiceImpl.findBirdByRegExName("^" + name);
 		} else {
 			birds = birdServiceImpl.findBirdById(id);
