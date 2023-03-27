@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "ddd983f4-6e79-4bd4-b599-76694cfb18c4",
+		"name": "Bird Sightings",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all bird Sighting",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/birdSighting/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"birdSighting",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get bird sighting by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/birdSighting/getBy?name=Red Spurfowl",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"birdSighting",
+						"getBy"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Red Spurfowl"
+						},
+						{
+							"key": "id",
+							"value": "641eff115b8f655fc2adcb9f",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get bird sighting by params",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/birdSighting/getByParams?territory=Karnala&location=Garmaal-Ransai&trail=T1&value=S",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"birdSighting",
+						"getByParams"
+					],
+					"query": [
+						{
+							"key": "territory",
+							"value": "Karnala"
+						},
+						{
+							"key": "location",
+							"value": "Garmaal-Ransai"
+						},
+						{
+							"key": "trail",
+							"value": "T1"
+						},
+						{
+							"key": "value",
+							"value": "S"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adding Sightings",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"speciesName\": \"Lesser Whistling-Duck\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"S\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Grey Junglefowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Grey Junglefowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Red Spurfowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/birdSighting/addSightings",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"birdSighting",
+						"addSightings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Bird Copy",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/birdSighting/deleteAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"birdSighting",
+						"deleteAll"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

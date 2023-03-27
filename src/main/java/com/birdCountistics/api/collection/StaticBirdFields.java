@@ -9,6 +9,17 @@ public class StaticBirdFields {
 	private String iucn;
 	private String endemism;
 
+	public StaticBirdFields(String speciesName, String scientificName, String family, String schedule, String iucn,
+			String endemism) {
+
+		this.speciesName = speciesName;
+		this.scientificName = scientificName;
+		this.family = family;
+		this.schedule = schedule;
+		this.iucn = iucn;
+		this.endemism = endemism;
+	}
+
 	public String getScientificName() {
 		return scientificName;
 	}
@@ -56,4 +67,5 @@ public class StaticBirdFields {
 	public void setEndemism(String endemism) {
 		this.endemism = endemism;
 	}
+
 }

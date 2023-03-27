@@ -2,26 +2,36 @@ package com.birdCountistics.api.rest;
 
 import java.util.List;
 
-import com.birdCountistics.api.collection.Birds;
+import com.birdCountistics.api.collection.Bird;
+import com.birdCountistics.api.collection.BirdSighting;
 import com.birdCountistics.api.collection.Sightings;
 
 public interface BirdService {
+	public void deleteAllBird();
 
-	public List<Birds> findAll();
+	public void deleteAll();
 
-	public List<Birds> findBirdByRegExName(String domain);
+	public List<Sightings> findAll();
 
-	public void saveAll(List<Birds> object);
+	public List<Bird> findAllBird();
+
+	public Bird getBirdByName(String name);
+
+	public List<Sightings> findSightingsByName(String domain);
+
+	public void saveAllBird(List<Bird> object);
 
 	public void deleteById(String id);
 
 	public String findIdByName(String name);
 
-	public List<Birds> findBirdById(String id);
+	public List<BirdSighting> findBirdById(String id);
 
-	public void addSightings(List<Sightings> object);
+	public void addSighting(Sightings object);
 
-	public List<Birds> findBirdsByTerritory(String territory);
+	public List<BirdSighting> findBirdsByTerritory(String territory);
 
-	List<Birds> findByCriteria(String territory, String location, String trail, String value);
+	List<Sightings> findByCriteria(String territory, String location, String trail, String value);
+
+	public void updateSpeciesId();
 }

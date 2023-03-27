@@ -10,47 +10,64 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.birdCountistics.api.collection.Birds;
+import com.birdCountistics.api.collection.Bird;
+import com.birdCountistics.api.collection.BirdSighting;
 import com.birdCountistics.api.collection.Sightings;
 import com.birdCountistics.api.repository.BirdRepository;
+import com.birdCountistics.api.repository.BirdSightingRepository;
 
 @Service
 public class BirdServiceImpl implements BirdService {
+
 	@Autowired
 	private MongoOperations mongoOps;
+
 	@Autowired
-	BirdRepository repository;
+	BirdSightingRepository repository;
+
+	@Autowired
+	BirdRepository birdRepository;
 
 	@Override
-	public List<Birds> findAll() {
+	public List<Sightings> findAll() {
 
-		List<Birds> birds = repository.findAll();
+		List<Sightings> birdSighting = repository.findAll();
+		return birdSighting;
+	}
+
+	@Override
+	public List<Bird> findAllBird() {
+
+		List<Bird> birds = birdRepository.findAll();
 		return birds;
 	}
 
 	@Override
-	public List<Birds> findBirdByRegExName(String domain) {
-
-		List<Birds> birds = repository.findBirdByRegExName(domain);
-		return birds;
+	public Bird getBirdByName(String name) {
+		Bird bird = birdRepository.findBirdByName(name);
+		return bird;
 	}
 
 	@Override
-	public void saveAll(List<Birds> object) {
+	public List<Sightings> findSightingsByName(String name) {
 
-		repository.saveAll(object);
+		List<Sightings> sighting = repository.findSightingByName(name);
+		return sighting;
 	}
 
 	@Override
-	public void addSightings(List<Sightings> object) {
-		String id = findIdByName(object.get(0).getSpeciesName());
-		Birds birdDocument = repository.findById(id).orElse(null);
-		birdDocument.getSightings().addAll(object);
-		repository.save(birdDocument);
+	public void saveAllBird(List<Bird> object) {
+
+		birdRepository.saveAll(object);
 	}
 
 	@Override
-	public List<Birds> findBirdsByTerritory(String territory) {
+	public void addSighting(Sightings object) {
+		repository.save(object);
+	}
+
+	@Override
+	public List<BirdSighting> findBirdsByTerritory(String territory) {
 		return repository.findBirdsByTerritory(territory);
 	}
 
@@ -61,36 +78,53 @@ public class BirdServiceImpl implements BirdService {
 	}
 
 	@Override
-	public String findIdByName(String name) {
-		return repository.findBirdByName(name).getId();
+	public void deleteAll() {
+
+		repository.deleteAll();
 	}
 
 	@Override
-	public List<Birds> findBirdById(String id) {
-		List<Birds> bird = repository.findBirdById(id);
+	public void deleteAllBird() {
+
+		birdRepository.deleteAll();
+	}
+
+	@Override
+	public String findIdByName(String name) {
+		return birdRepository.findBirdByName(name).getIucn();
+	}
+
+	@Override
+	public List<BirdSighting> findBirdById(String id) {
+		List<BirdSighting> bird = repository.findBirdById(id);
 		return bird;
 	}
 
 	@Override
-	public List<Birds> findByCriteria(String territory, String location, String trail, String value) {
+	public void updateSpeciesId() {
+
+	}
+
+	@Override
+	public List<Sightings> findByCriteria(String territory, String location, String trail, String value) {
 		Map<String, String> criteria = new HashMap<>();
 		if (territory != null) {
-			criteria.put("sightings.territory", territory);
+			criteria.put("territory", territory);
 		}
 		if (location != null) {
-			criteria.put("sightings.location", location);
+			criteria.put("location", location);
 		}
 		if (trail != null) {
-			criteria.put("sightings.trail", trail);
+			criteria.put("trail", trail);
 		}
 		if (value != null) {
-			criteria.put("sightings.value", value);
+			criteria.put("value", value);
 		}
 		Criteria criteriaObj = new Criteria();
 		for (Map.Entry<String, String> entry : criteria.entrySet()) {
 			criteriaObj.and(entry.getKey()).is(entry.getValue());
 		}
 		Query query = new Query(criteriaObj);
-		return mongoOps.find(query, Birds.class);
+		return mongoOps.find(query, Sightings.class);
 	}
 }

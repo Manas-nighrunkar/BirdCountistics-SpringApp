@@ -1,20 +1,36 @@
 package com.birdCountistics.api.collection;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import lombok.Data;
+
+@Data
+@Document(collection = "birdsNew2")
 public class Sightings {
 
-	private String speciesName;
+	StaticBirdFields staticBirdFields;
 	Meta meta;
 	private String territory;
 	private String location;
 	private String trail;
 	private String value;
 
-	public String getSpeciesName() {
-		return speciesName;
+	public Sightings(StaticBirdFields staticBirdFields, Meta meta, String territory, String location, String trail,
+			String value) {
+		this.staticBirdFields = staticBirdFields;
+		this.meta = meta;
+		this.territory = territory;
+		this.location = location;
+		this.trail = trail;
+		this.value = value;
 	}
 
-	public void setSpeciesName(String speciesName) {
-		this.speciesName = speciesName;
+	public StaticBirdFields getStaticBirdFields() {
+		return this.staticBirdFields;
+	}
+
+	public void setStaticBirdFields(StaticBirdFields staticBirdFields) {
+		this.staticBirdFields = staticBirdFields;
 	}
 
 	public String getTerritory() {

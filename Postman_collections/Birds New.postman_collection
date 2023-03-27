@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "3a2ee81d-8045-4f80-91aa-17e2ce73001c",
+		"name": "Birds",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "api Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/healthCheck",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"healthCheck"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all birds",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/bird/getAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bird",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get bird  by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/bird/getBy?name=Red Spurfowl",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bird",
+						"getBy"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "Red Spurfowl"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Adding Bird",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"speciesName\": \"Red Spurfowl\",\r\n        \"scientificName\": \"Galloperdix spadicea\",\r\n        \"family\": \"Phasianidae\",\r\n        \"schedule\": \"Sch. II\",\r\n        \"iucn\": \"LC\",\r\n        \"endemism\": \"India\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Spotted Dove\",\r\n        \"scientificName\": \"Spilopelia chinensis\",\r\n        \"family\": \"Columbidae\",\r\n        \"schedule\": \"Sch. II\",\r\n        \"iucn\": \"LC\",\r\n        \"endemism\": \"Not applicable\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/bird/addBird",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bird",
+						"addBird"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Bird",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"id\": \"64194efaffb8b04e0db49f1d\",\r\n        \"name\": \"Parrot99\",\r\n        \"color\": \"Green\",\r\n        \"region\": \"India - SE\"\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/updateBird",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"updateBird"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Bird",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/bird/deleteAll",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"bird",
+						"deleteAll"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

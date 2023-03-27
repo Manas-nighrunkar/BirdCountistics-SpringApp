@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.birdCountistics.api.collection.Birds;
+import com.birdCountistics.api.collection.AddSightingPOJO;
+import com.birdCountistics.api.collection.Bird;
 import com.birdCountistics.api.collection.Sightings;
+import com.birdCountistics.api.collection.StaticBirdFields;
 
 @RestController
 public class RestContoller {
@@ -30,38 +32,45 @@ public class RestContoller {
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000")
-	@RequestMapping(value = "/api/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/birdSighting/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getAll() {
 
 		System.out.println("Fetching all birds");
 
-		List<Birds> birds = birdServiceImpl.findAll();
+		List<Sightings> birdSighting = birdServiceImpl.findAll();
 
-		return new ResponseEntity<Object>(birds, HttpStatus.OK);
+		return new ResponseEntity<Object>(birdSighting, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000")
-	@RequestMapping(value = "/api/getByName", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/birdSighting/getBy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Object> getByName(@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "id", required = false) String id) {
+	public ResponseEntity<Object> getByName(@RequestParam(value = "name", required = false) String name) {
 
 		System.out.println("Fetching bird by name");
-		List<Birds> birds = null;
-		if (name != null && id != null) {
+		List<Sightings> sightings = null;
+		if (name == null) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Name or ID Accepted, Both not allowed");
 		} else if (name != null) {
-			birds = birdServiceImpl.findBirdByRegExName("^" + name);
-		} else {
-			birds = birdServiceImpl.findBirdById(id);
+			sightings = birdServiceImpl.findSightingsByName(name);
 		}
 
-		return new ResponseEntity<Object>(birds, HttpStatus.OK);
+		return new ResponseEntity<Object>(sightings, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/api/bird/getBy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Object> getBirdByName(@RequestParam(value = "name", required = false) String name) {
+
+		System.out.println("Fetching bird by name");
+		Bird bird = birdServiceImpl.getBirdByName(name);
+
+		return new ResponseEntity<Object>(bird, HttpStatus.OK);
 	}
 
 	@CrossOrigin(origins = "http://localhost:3000")
-	@RequestMapping(value = "/api/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/birdSighting/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByParams(@RequestParam(value = "territory", required = false) String territory,
 			@RequestParam(value = "location", required = false) String location,
@@ -69,7 +78,7 @@ public class RestContoller {
 			@RequestParam(value = "value", required = false) String value) {
 
 		System.out.println("Fetching bird by params territory = " + territory);
-		List<Birds> birds = birdServiceImpl.findByCriteria(territory, location, trail, value);
+		List<Sightings> sighting = birdServiceImpl.findByCriteria(territory, location, trail, value);
 //		List<Birds> birds = null;
 //		if (territory == null && location == null && trail == null && value == null) {
 //			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -81,35 +90,46 @@ public class RestContoller {
 //			birds = birdServiceImpl.findBirdById(id);
 //		}
 
-		return new ResponseEntity<Object>(birds, HttpStatus.OK);
+		return new ResponseEntity<Object>(sighting, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/api/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/birdSighting/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> addSightings(@RequestBody List<Sightings> object) {
+	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
 
-		try {
-			birdServiceImpl.findIdByName(object.get(0).getSpeciesName());
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SpecieName Entry not available");
+		Sightings sightings = null;
+		for (AddSightingPOJO obj : object) {
+			Bird bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
+			StaticBirdFields staticBirdField = new StaticBirdFields(bird.getSpeciesName(), bird.getScientificName(),
+					bird.getFamily(), bird.getSchedule(), bird.getIucn(), bird.getEndemism());
+			sightings = new Sightings(staticBirdField, obj.getMeta(), obj.getTerritory(), obj.getLocation(),
+					obj.getTrail(), obj.getValue());
+			birdServiceImpl.addSighting(sightings);
 		}
-		birdServiceImpl.addSightings(object);
-
-		String message = "Add Sightings successful";
-		return ResponseEntity.status(HttpStatus.CREATED).body(message);
+		return new ResponseEntity<Object>(sightings, HttpStatus.OK);
+//
+//		try {
+//			birdServiceImpl.findIdByName(object.get(0).getSpeciesName());
+//		} catch (Exception e) {
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SpecieName Entry not available");
+//		}
+//		birdServiceImpl.addSightings(object);
+//
+//		String message = "Add Sightings successful";
+//		return ResponseEntity.status(HttpStatus.CREATED).body(message);
 	}
 
-	@RequestMapping(value = "/api/addBird", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/bird/addBird", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> addBird(@RequestBody List<Birds> object) {
+	public ResponseEntity<String> addBird(@RequestBody List<Bird> object) {
 
-		birdServiceImpl.saveAll(object);
-
+		birdServiceImpl.saveAllBird(object);
+		birdServiceImpl.updateSpeciesId();
 		String message = "Add Bird successful";
 		return ResponseEntity.status(HttpStatus.CREATED).body(message);
 	}
 
-	@RequestMapping(value = "/api/getIdByName", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/bird/getIdByName", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String getIdByName(@RequestParam(value = "name", required = true) String name) {
 
@@ -119,24 +139,51 @@ public class RestContoller {
 		return id;
 	}
 
-	@RequestMapping(value = "/api/updateBird", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@RequestMapping(value = "/api/updateBird", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public ResponseEntity<String> updateBird(@RequestBody List<BirdSighting> object) {
+//
+//		birdServiceImpl.saveAll(object);
+//
+//		String message = "Update Bird successful";
+//		return ResponseEntity.status(HttpStatus.OK).body(message);
+//	}
+//
+//	@RequestMapping(value = "/api/deleteBird", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+//	@ResponseBody
+//	public ResponseEntity<String> deleteBird(@RequestParam(value = "id", required = true) String id) {
+//
+//		birdServiceImpl.deleteById(id);
+//
+//		String message = "Delete Bird successful";
+//		return ResponseEntity.status(HttpStatus.OK).body(message);
+//	}
+
+	@RequestMapping(value = "/api/bird/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> updateBird(@RequestBody List<Birds> object) {
+	public ResponseEntity<Object> getAllSBF() {
+		List<Bird> bird = birdServiceImpl.findAllBird();
 
-		birdServiceImpl.saveAll(object);
-
-		String message = "Update Bird successful";
-		return ResponseEntity.status(HttpStatus.OK).body(message);
+		return new ResponseEntity<Object>(bird, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/api/deleteBird", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/api/birdSighting/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<String> deleteBird(@RequestParam(value = "id", required = true) String id) {
+	public ResponseEntity<String> deleteBirdSighting() {
 
-		birdServiceImpl.deleteById(id);
+		birdServiceImpl.deleteAll();
 
 		String message = "Delete Bird successful";
 		return ResponseEntity.status(HttpStatus.OK).body(message);
 	}
 
+	@RequestMapping(value = "/api/bird/deleteAll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<String> deleteBird() {
+
+		birdServiceImpl.deleteAllBird();
+
+		String message = "Delete Bird successful";
+		return ResponseEntity.status(HttpStatus.OK).body(message);
+	}
 }
