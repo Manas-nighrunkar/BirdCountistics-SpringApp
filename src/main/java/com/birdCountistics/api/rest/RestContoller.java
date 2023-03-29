@@ -3,10 +3,10 @@ package com.birdCountistics.api.rest;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +31,6 @@ public class RestContoller {
 		return "API is up and running";
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getAll() {
@@ -40,10 +39,12 @@ public class RestContoller {
 
 		List<Sightings> birdSighting = birdServiceImpl.findAll();
 
-		return new ResponseEntity<Object>(birdSighting, HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+		return ResponseEntity.ok().headers(headers).body(birdSighting);
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/getBy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByName(@RequestParam(value = "name", required = false) String name) {
@@ -56,7 +57,10 @@ public class RestContoller {
 			sightings = birdServiceImpl.findSightingsByName(name);
 		}
 
-		return new ResponseEntity<Object>(sightings, HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+		return ResponseEntity.ok().headers(headers).body(sightings);
 	}
 
 	@RequestMapping(value = "/api/bird/getBy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -69,7 +73,6 @@ public class RestContoller {
 		return new ResponseEntity<Object>(bird, HttpStatus.OK);
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByParams(@RequestParam(value = "speciesName", required = false) String name,
@@ -103,11 +106,12 @@ public class RestContoller {
 //		else {
 //			birds = birdServiceImpl.findBirdById(id);
 //		}
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
-		return new ResponseEntity<Object>(sighting, HttpStatus.OK);
+		return ResponseEntity.ok().headers(headers).body(sighting);
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
@@ -124,7 +128,10 @@ public class RestContoller {
 					obj.getTrail(), obj.getValue());
 			birdServiceImpl.addSighting(sightings);
 		}
-		return new ResponseEntity<Object>(sightings, HttpStatus.OK);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+		return ResponseEntity.ok().headers(headers).body(sightings);
 //
 //		try {
 //			birdServiceImpl.findIdByName(object.get(0).getSpeciesName());
