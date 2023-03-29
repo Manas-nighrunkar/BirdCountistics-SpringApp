@@ -88,12 +88,19 @@ public class RestContoller {
 				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T2", value);
 				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T3", value);
 				sighting.addAll(sighting1);
+				HttpHeaders headers = new HttpHeaders();
+				headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+				return ResponseEntity.ok().headers(headers).body(sighting);
 			} else if (trail.equals("night")) {
 				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T1", value);
 				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T4", value);
 				sighting.addAll(sighting1);
+				HttpHeaders headers = new HttpHeaders();
+				headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+				return ResponseEntity.ok().headers(headers).body(sighting);
 			}
-			return new ResponseEntity<Object>(sighting, HttpStatus.OK);
 		}
 		sighting = birdServiceImpl.findByCriteria(name, territory, location, trail, value);
 //		List<Birds> birds = null;
