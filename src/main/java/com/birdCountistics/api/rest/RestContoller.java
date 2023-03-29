@@ -72,13 +72,25 @@ public class RestContoller {
 	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Object> getByParams(@RequestParam(value = "territory", required = false) String territory,
+	public ResponseEntity<Object> getByParams(@RequestParam(value = "speciesName", required = false) String name,
+			@RequestParam(value = "territory", required = false) String territory,
 			@RequestParam(value = "location", required = false) String location,
 			@RequestParam(value = "trail", required = false) String trail,
 			@RequestParam(value = "value", required = false) String value) {
 
+		List<Sightings> sighting = null;
 		System.out.println("Fetching bird by params territory = " + territory);
-		List<Sightings> sighting = birdServiceImpl.findByCriteria(territory, location, trail, value);
+		if (trail.equals("day")) {
+			sighting = birdServiceImpl.findByCriteria(name, territory, location, "T2", value);
+			List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T3", value);
+			sighting.addAll(sighting1);
+		} else if (trail.equals("night")) {
+			sighting = birdServiceImpl.findByCriteria(name, territory, location, "T1", value);
+			List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T4", value);
+			sighting.addAll(sighting1);
+		} else {
+			sighting = birdServiceImpl.findByCriteria(name, territory, location, trail, value);
+		}
 //		List<Birds> birds = null;
 //		if (territory == null && location == null && trail == null && value == null) {
 //			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -93,12 +105,16 @@ public class RestContoller {
 		return new ResponseEntity<Object>(sighting, HttpStatus.OK);
 	}
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@RequestMapping(value = "/api/birdSighting/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
 
 		Sightings sightings = null;
 		for (AddSightingPOJO obj : object) {
+
+			System.out.println("in for loop");
+			System.out.println(obj.getSpeciesName());
 			Bird bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
 			StaticBirdFields staticBirdField = new StaticBirdFields(bird.getSpeciesName(), bird.getScientificName(),
 					bird.getFamily(), bird.getSchedule(), bird.getIucn(), bird.getEndemism());

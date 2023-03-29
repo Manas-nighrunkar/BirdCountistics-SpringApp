@@ -106,8 +106,11 @@ public class BirdServiceImpl implements BirdService {
 	}
 
 	@Override
-	public List<Sightings> findByCriteria(String territory, String location, String trail, String value) {
+	public List<Sightings> findByCriteria(String name, String territory, String location, String trail, String value) {
 		Map<String, String> criteria = new HashMap<>();
+		if (name != null) {
+			criteria.put("staticBirdFields.speciesName", name);
+		}
 		if (territory != null) {
 			criteria.put("territory", territory);
 		}

@@ -31,7 +31,7 @@ public interface BirdService {
 
 	public List<BirdSighting> findBirdsByTerritory(String territory);
 
-	List<Sightings> findByCriteria(String territory, String location, String trail, String value);
+	List<Sightings> findByCriteria(String name, String territory, String location, String trail, String value);
 
 	public void updateSpeciesId();
 }
