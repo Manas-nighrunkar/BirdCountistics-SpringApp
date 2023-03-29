@@ -80,17 +80,19 @@ public class RestContoller {
 
 		List<Sightings> sighting = null;
 		System.out.println("Fetching bird by params territory = " + territory);
-		if (trail.equals("day")) {
-			sighting = birdServiceImpl.findByCriteria(name, territory, location, "T2", value);
-			List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T3", value);
-			sighting.addAll(sighting1);
-		} else if (trail.equals("night")) {
-			sighting = birdServiceImpl.findByCriteria(name, territory, location, "T1", value);
-			List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T4", value);
-			sighting.addAll(sighting1);
-		} else {
-			sighting = birdServiceImpl.findByCriteria(name, territory, location, trail, value);
+		if (trail != null) {
+			if (trail.equals("day")) {
+				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T2", value);
+				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T3", value);
+				sighting.addAll(sighting1);
+			} else if (trail.equals("night")) {
+				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T1", value);
+				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T4", value);
+				sighting.addAll(sighting1);
+			}
+			return new ResponseEntity<Object>(sighting, HttpStatus.OK);
 		}
+		sighting = birdServiceImpl.findByCriteria(name, territory, location, trail, value);
 //		List<Birds> birds = null;
 //		if (territory == null && location == null && trail == null && value == null) {
 //			return ResponseEntity.status(HttpStatus.BAD_REQUEST)

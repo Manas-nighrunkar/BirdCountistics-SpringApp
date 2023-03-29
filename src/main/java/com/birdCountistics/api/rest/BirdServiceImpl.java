@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -128,6 +129,7 @@ public class BirdServiceImpl implements BirdService {
 			criteriaObj.and(entry.getKey()).is(entry.getValue());
 		}
 		Query query = new Query(criteriaObj);
+		query.with(Sort.by(Sort.Order.asc("staticBirdFields.speciesName")));
 		return mongoOps.find(query, Sightings.class);
 	}
 }
