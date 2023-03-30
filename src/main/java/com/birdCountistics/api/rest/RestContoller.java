@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -120,6 +121,7 @@ public class RestContoller {
 	}
 
 	@RequestMapping(value = "/api/birdSighting/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@CrossOrigin("*")
 	@ResponseBody
 	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
 
@@ -135,10 +137,8 @@ public class RestContoller {
 					obj.getTrail(), obj.getValue());
 			birdServiceImpl.addSighting(sightings);
 		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
-		return ResponseEntity.ok().headers(headers).body(sightings);
+		return ResponseEntity.status(HttpStatus.CREATED).body("Added SucessFully");
 //
 //		try {
 //			birdServiceImpl.findIdByName(object.get(0).getSpeciesName());
