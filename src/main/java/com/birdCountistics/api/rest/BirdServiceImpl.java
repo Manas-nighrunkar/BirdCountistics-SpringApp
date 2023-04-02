@@ -107,10 +107,26 @@ public class BirdServiceImpl implements BirdService {
 	}
 
 	@Override
-	public List<Sightings> findByCriteria(String name, String territory, String location, String trail, String value) {
+	public List<Sightings> findByCriteria(String name, String family, String schedule, String iucn, String endemism,
+			String year, String territory, String location, String trail, String value) {
 		Map<String, String> criteria = new HashMap<>();
 		if (name != null) {
 			criteria.put("staticBirdFields.speciesName", name);
+		}
+		if (family != null) {
+			criteria.put("staticBirdFields.family", family);
+		}
+		if (schedule != null) {
+			criteria.put("staticBirdFields.schedule", schedule);
+		}
+		if (iucn != null) {
+			criteria.put("staticBirdFields.iucn", iucn);
+		}
+		if (endemism != null) {
+			criteria.put("staticBirdFields.endemism", endemism);
+		}
+		if (year != null) {
+			criteria.put("meta.year", year);
 		}
 		if (territory != null) {
 			criteria.put("territory", territory);

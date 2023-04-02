@@ -11,12 +11,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/birdSighting/getAll",
-					"protocol": "http",
+					"raw": "https://birdcountistics.onrender.com/api/birdSighting/getAll",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"birdcountistics",
+						"onrender",
+						"com"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"birdSighting",
@@ -64,12 +65,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/birdSighting/getByParams?territory=Karnala&location=Garmaal-Ransai&trail=T1&value=S",
-					"protocol": "http",
+					"raw": "https://birdcountistics.onrender.com/api/birdSighting/getByParams?trail=T1",
+					"protocol": "https",
 					"host": [
-						"localhost"
+						"birdcountistics",
+						"onrender",
+						"com"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"birdSighting",
@@ -78,11 +80,13 @@
 					"query": [
 						{
 							"key": "territory",
-							"value": "Karnala"
+							"value": "Phansad",
+							"disabled": true
 						},
 						{
 							"key": "location",
-							"value": "Garmaal-Ransai"
+							"value": "Garmaal-Ransai",
+							"disabled": true
 						},
 						{
 							"key": "trail",
@@ -90,7 +94,13 @@
 						},
 						{
 							"key": "value",
-							"value": "S"
+							"value": "S",
+							"disabled": true
+						},
+						{
+							"key": "speciesName",
+							"value": "Red Spurfowl",
+							"disabled": true
 						}
 					]
 				}
@@ -104,7 +114,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "[\r\n    {\r\n        \"speciesName\": \"Lesser Whistling-Duck\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"S\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Grey Junglefowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Grey Junglefowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    },\r\n    {\r\n        \"speciesName\": \"Red Spurfowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Karnala\",\r\n        \"location\": \"Garmaal-Ransai\",\r\n        \"trail\": \"T1\",\r\n        \"value\": \"H\"\r\n    }\r\n]",
+					"raw": "[\r\n    {\r\n        \"speciesName\": \"Red Spurfowl\",\r\n        \"meta\": {\r\n            \"dataSource\": \"KBC_2\",\r\n            \"date\": \"05\",\r\n            \"month\": \"Oct\",\r\n            \"year\": \"2021\"\r\n        },\r\n        \"territory\": \"Phansad\",\r\n        \"location\": \"Upper Mortaka\",\r\n        \"trail\": \"T2\",\r\n        \"value\": \"S\"\r\n    }\r\n]",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -77,46 +77,70 @@ public class RestContoller {
 	@RequestMapping(value = "/api/birdSighting/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getByParams(@RequestParam(value = "speciesName", required = false) String name,
+			@RequestParam(value = "family", required = false) String family,
+			@RequestParam(value = "schedule", required = false) String schedule,
+			@RequestParam(value = "iucn", required = false) String iucn,
+			@RequestParam(value = "endemism", required = false) String endemism,
+			@RequestParam(value = "year", required = false) String year,
 			@RequestParam(value = "territory", required = false) String territory,
 			@RequestParam(value = "location", required = false) String location,
 			@RequestParam(value = "trail", required = false) String trail,
 			@RequestParam(value = "value", required = false) String value) {
 
 		List<Sightings> sighting = null;
-		System.out.println("Fetching bird by params territory = " + territory);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+		System.out.println("Fetching bird by params speciesName = " + name + ", family= " + family + ", schedule= "
+				+ schedule + ", iucn= " + iucn + ", endemism= " + endemism + ", year= " + year + ", territory= "
+				+ territory + ", location= " + location + ", trail= " + trail + ", value= " + value);
+
 		if (trail != null) {
+			if (trail.equals("day") | trail.equals("night")) {
+				if (territory == null) {
+					return ResponseEntity.badRequest().headers(headers)
+							.body("If trail equals day or night, territory cannot be null");
+				}
+			}
 			if (trail.equals("day")) {
-				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T2", value);
-				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T3", value);
-				sighting.addAll(sighting1);
-				HttpHeaders headers = new HttpHeaders();
-				headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+				if (territory.equals("Karnala")) {
+					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
+							location, "T2", value);
+					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
+							year, territory, location, "T3", value);
+					sighting.addAll(sighting1);
+
+				} else if (territory.equals("Phansad")) {
+					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
+							location, "T2", value);
+					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
+							year, territory, location, "T4", value);
+					sighting.addAll(sighting1);
+
+				}
 
 				return ResponseEntity.ok().headers(headers).body(sighting);
 			} else if (trail.equals("night")) {
-				sighting = birdServiceImpl.findByCriteria(name, territory, location, "T1", value);
-				List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, territory, location, "T4", value);
-				sighting.addAll(sighting1);
-				HttpHeaders headers = new HttpHeaders();
-				headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+				if (territory.equals("Karnala")) {
+					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
+							location, "T1", value);
+					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
+							year, territory, location, "T4", value);
+					sighting.addAll(sighting1);
 
+				} else if (territory.equals("Phansad")) {
+
+					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
+							location, "T1", value);
+					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
+							year, territory, location, "T3", value);
+					sighting.addAll(sighting1);
+
+				}
 				return ResponseEntity.ok().headers(headers).body(sighting);
 			}
 		}
-		sighting = birdServiceImpl.findByCriteria(name, territory, location, trail, value);
-//		List<Birds> birds = null;
-//		if (territory == null && location == null && trail == null && value == null) {
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//					.body("AtLeast one Parameter required (territory, location, trail, value)");
-//		} else if (territory != null) {
-//			birds = birdServiceImpl.findBirdsByTerritory(territory);
-//		}
-//		else {
-//			birds = birdServiceImpl.findBirdById(id);
-//		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
-
+		sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory, location,
+				trail, value);
 		return ResponseEntity.ok().headers(headers).body(sighting);
 	}
 
@@ -125,30 +149,36 @@ public class RestContoller {
 	@ResponseBody
 	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
 
+		if (object == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("POST body should not be Null");
 		Sightings sightings = null;
 		for (AddSightingPOJO obj : object) {
 
-			System.out.println("in for loop");
-			System.out.println(obj.getSpeciesName());
-			Bird bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
+			System.out.println("adding bird: " + obj.getSpeciesName());
+			Bird bird;
+			try {
+				bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
+			} catch (Exception e) {
+				System.out.println("Error in Adding Sighting to database: " + e.getMessage()
+						+ ": Either there are mulitple entries of same bird or normalization issue");
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error in Adding Sighting to database " + e.getMessage());
+
+			}
 			StaticBirdFields staticBirdField = new StaticBirdFields(bird.getSpeciesName(), bird.getScientificName(),
 					bird.getFamily(), bird.getSchedule(), bird.getIucn(), bird.getEndemism());
 			sightings = new Sightings(staticBirdField, obj.getMeta(), obj.getTerritory(), obj.getLocation(),
 					obj.getTrail(), obj.getValue());
-			birdServiceImpl.addSighting(sightings);
+			try {
+				birdServiceImpl.addSighting(sightings);
+			} catch (Exception e) {
+				System.out.println("Error in Adding Sighting to database " + e.getMessage());
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body("Error in Adding Sighting to database " + e.getMessage());
+			}
 		}
 
 		return ResponseEntity.status(HttpStatus.CREATED).body("Added SucessFully");
-//
-//		try {
-//			birdServiceImpl.findIdByName(object.get(0).getSpeciesName());
-//		} catch (Exception e) {
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("SpecieName Entry not available");
-//		}
-//		birdServiceImpl.addSightings(object);
-//
-//		String message = "Add Sightings successful";
-//		return ResponseEntity.status(HttpStatus.CREATED).body(message);
 	}
 
 	@RequestMapping(value = "/api/bird/addBird", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
