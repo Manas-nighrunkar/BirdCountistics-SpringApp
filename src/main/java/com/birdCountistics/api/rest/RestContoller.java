@@ -32,6 +32,26 @@ public class RestContoller {
 		return "API is up and running";
 	}
 
+	@RequestMapping(value = "/api/validateUser", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<String> validateUser(@RequestParam(value = "API_KEY", required = false) String API_KEY) {
+
+		System.out.println("Validating Key: " + API_KEY);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+
+		boolean value = birdServiceImpl.validateUser(API_KEY);
+
+		if (value) {
+
+			return ResponseEntity.ok().headers(headers).body("User is Valid");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+					.body("Unauthorized");
+
+		}
+	}
+
 	@RequestMapping(value = "/api/birdSighting/getAll", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Object> getAll() {
@@ -76,16 +96,16 @@ public class RestContoller {
 
 	@RequestMapping(value = "/api/birdSighting/getByParams", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public ResponseEntity<Object> getByParams(@RequestParam(value = "speciesName", required = false) String name,
-			@RequestParam(value = "family", required = false) String family,
-			@RequestParam(value = "schedule", required = false) String schedule,
-			@RequestParam(value = "iucn", required = false) String iucn,
-			@RequestParam(value = "endemism", required = false) String endemism,
-			@RequestParam(value = "year", required = false) String year,
-			@RequestParam(value = "territory", required = false) String territory,
-			@RequestParam(value = "location", required = false) String location,
-			@RequestParam(value = "trail", required = false) String trail,
-			@RequestParam(value = "value", required = false) String value) {
+	public ResponseEntity<Object> getByParams(@RequestParam(value = "speciesName", required = false) List<String> name,
+			@RequestParam(value = "family", required = false) List<String> family,
+			@RequestParam(value = "schedule", required = false) List<String> schedule,
+			@RequestParam(value = "iucn", required = false) List<String> iucn,
+			@RequestParam(value = "endemism", required = false) List<String> endemism,
+			@RequestParam(value = "year", required = false) List<String> year,
+			@RequestParam(value = "territory", required = false) List<String> territory,
+			@RequestParam(value = "location", required = false) List<String> location,
+			@RequestParam(value = "trail", required = false) List<String> trail,
+			@RequestParam(value = "value", required = false) List<String> value) {
 
 		List<Sightings> sighting = null;
 		HttpHeaders headers = new HttpHeaders();
@@ -95,48 +115,37 @@ public class RestContoller {
 				+ territory + ", location= " + location + ", trail= " + trail + ", value= " + value);
 
 		if (trail != null) {
-			if (trail.equals("day") | trail.equals("night")) {
+			if (trail.contains("day") | trail.contains("night")) {
 				if (territory == null) {
 					return ResponseEntity.badRequest().headers(headers)
 							.body("If trail equals day or night, territory cannot be null");
 				}
 			}
-			if (trail.equals("day")) {
-				if (territory.equals("Karnala")) {
-					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
-							location, "T2", value);
-					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
-							year, territory, location, "T3", value);
-					sighting.addAll(sighting1);
+			if (trail.contains("day") && trail.contains("night")) {
+				return ResponseEntity.badRequest().headers(headers)
+						.body("day and night both not allowed at same time, instead leave it blank");
 
-				} else if (territory.equals("Phansad")) {
-					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
-							location, "T2", value);
-					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
-							year, territory, location, "T4", value);
-					sighting.addAll(sighting1);
-
-				}
-
-				return ResponseEntity.ok().headers(headers).body(sighting);
-			} else if (trail.equals("night")) {
-				if (territory.equals("Karnala")) {
-					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
-							location, "T1", value);
-					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
-							year, territory, location, "T4", value);
-					sighting.addAll(sighting1);
-
-				} else if (territory.equals("Phansad")) {
-
-					sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory,
-							location, "T1", value);
-					List<Sightings> sighting1 = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism,
-							year, territory, location, "T3", value);
-					sighting.addAll(sighting1);
+			}
+			if (trail.contains("day")) {
+				trail.remove(0);
+				if (territory.contains("Karnala")) {
+					trail.add("T2");
+					trail.add("T3");
+				} else if (territory.contains("Phansad")) {
+					trail.add("T2");
+					trail.add("T4");
 
 				}
-				return ResponseEntity.ok().headers(headers).body(sighting);
+			} else if (trail.contains("night")) {
+				trail.remove(0);
+				if (territory.contains("Karnala")) {
+					trail.add("T1");
+					trail.add("T4");
+				} else if (territory.contains("Phansad")) {
+					trail.add("T1");
+					trail.add("T3");
+
+				}
 			}
 		}
 		sighting = birdServiceImpl.findByCriteria(name, family, schedule, iucn, endemism, year, territory, location,
@@ -147,38 +156,46 @@ public class RestContoller {
 	@RequestMapping(value = "/api/birdSighting/addSightings", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@CrossOrigin("*")
 	@ResponseBody
-	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object) {
+	public ResponseEntity<Object> addSightings(@RequestBody List<AddSightingPOJO> object,
+			@RequestParam(value = "API_KEY", required = true) String API_KEY) {
 
-		if (object == null)
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("POST body should not be Null");
-		Sightings sightings = null;
-		for (AddSightingPOJO obj : object) {
+		boolean value = birdServiceImpl.validateUser(API_KEY);
 
-			System.out.println("adding bird: " + obj.getSpeciesName());
-			Bird bird;
-			try {
-				bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
-			} catch (Exception e) {
-				System.out.println("Error in Adding Sighting to database: " + e.getMessage()
-						+ ": Either there are mulitple entries of same bird or normalization issue");
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-						.body("Error in Adding Sighting to database " + e.getMessage());
+		if (value) {
+			if (object == null)
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("POST body should not be Null");
+			Sightings sightings = null;
+			for (AddSightingPOJO obj : object) {
 
+				System.out.println("adding bird: " + obj.getSpeciesName());
+				Bird bird;
+				try {
+					bird = birdServiceImpl.getBirdByName(obj.getSpeciesName());
+				} catch (Exception e) {
+					System.out.println("Error in Adding Sighting to database: " + e.getMessage()
+							+ ": Either there are mulitple entries of same bird or normalization issue");
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body("Error in Adding Sighting to database " + e.getMessage());
+
+				}
+				StaticBirdFields staticBirdField = new StaticBirdFields(bird.getSpeciesName(), bird.getScientificName(),
+						bird.getFamily(), bird.getSchedule(), bird.getIucn(), bird.getEndemism());
+				sightings = new Sightings(staticBirdField, obj.getMeta(), obj.getTerritory(), obj.getLocation(),
+						obj.getTrail(), obj.getValue());
+				try {
+					birdServiceImpl.addSighting(sightings);
+				} catch (Exception e) {
+					System.out.println("Error in Adding Sighting to database " + e.getMessage());
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body("Error in Adding Sighting to database " + e.getMessage());
+				}
 			}
-			StaticBirdFields staticBirdField = new StaticBirdFields(bird.getSpeciesName(), bird.getScientificName(),
-					bird.getFamily(), bird.getSchedule(), bird.getIucn(), bird.getEndemism());
-			sightings = new Sightings(staticBirdField, obj.getMeta(), obj.getTerritory(), obj.getLocation(),
-					obj.getTrail(), obj.getValue());
-			try {
-				birdServiceImpl.addSighting(sightings);
-			} catch (Exception e) {
-				System.out.println("Error in Adding Sighting to database " + e.getMessage());
-				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-						.body("Error in Adding Sighting to database " + e.getMessage());
-			}
+
+			return ResponseEntity.status(HttpStatus.CREATED).body("Added SucessFully");
+		} else {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("INVALID TOKEN, User Not Authorized");
+
 		}
-
-		return ResponseEntity.status(HttpStatus.CREATED).body("Added SucessFully");
 	}
 
 	@RequestMapping(value = "/api/bird/addBird", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -7,6 +7,8 @@ import com.birdCountistics.api.collection.BirdSighting;
 import com.birdCountistics.api.collection.Sightings;
 
 public interface BirdService {
+	public boolean validateUser(String apiKey);
+
 	public void deleteAllBird();
 
 	public void deleteAll();
@@ -31,8 +33,9 @@ public interface BirdService {
 
 	public List<BirdSighting> findBirdsByTerritory(String territory);
 
-	public List<Sightings> findByCriteria(String name, String family, String schedule, String iucn, String endemism,
-			String year, String territory, String location, String trail, String value);
+	public List<Sightings> findByCriteria(List<String> name, List<String> family, List<String> schedule,
+			List<String> iucn, List<String> endemism, List<String> year, List<String> territory, List<String> location,
+			List<String> trail, List<String> value);
 
 	public void updateSpeciesId();
 }

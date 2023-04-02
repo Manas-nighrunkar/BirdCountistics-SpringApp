@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.birdCountistics.api.collection.Bird;
 import com.birdCountistics.api.collection.BirdSighting;
 import com.birdCountistics.api.collection.Sightings;
+import com.birdCountistics.api.collection.User;
 import com.birdCountistics.api.repository.BirdRepository;
 import com.birdCountistics.api.repository.BirdSightingRepository;
+import com.birdCountistics.api.repository.UserRepository;
 
 @Service
 public class BirdServiceImpl implements BirdService {
@@ -28,6 +30,24 @@ public class BirdServiceImpl implements BirdService {
 
 	@Autowired
 	BirdRepository birdRepository;
+
+	@Autowired
+	UserRepository userRepository;
+
+	@Override
+	public boolean validateUser(String API_KEY) {
+
+		User user = userRepository.findUserByKey(API_KEY);
+		if (user != null) {
+			if (user.status.equals("Active"))
+				return true;
+			else if (user.status.equals("Disable"))
+				return false;
+		} else
+			return false;
+
+		return false;
+	}
 
 	@Override
 	public List<Sightings> findAll() {
@@ -107,9 +127,11 @@ public class BirdServiceImpl implements BirdService {
 	}
 
 	@Override
-	public List<Sightings> findByCriteria(String name, String family, String schedule, String iucn, String endemism,
-			String year, String territory, String location, String trail, String value) {
-		Map<String, String> criteria = new HashMap<>();
+	public List<Sightings> findByCriteria(List<String> name, List<String> family, List<String> schedule,
+			List<String> iucn, List<String> endemism, List<String> year, List<String> territory, List<String> location,
+			List<String> trail, List<String> value) {
+
+		Map<String, List<String>> criteria = new HashMap<>();
 		if (name != null) {
 			criteria.put("staticBirdFields.speciesName", name);
 		}
@@ -140,12 +162,15 @@ public class BirdServiceImpl implements BirdService {
 		if (value != null) {
 			criteria.put("value", value);
 		}
+
 		Criteria criteriaObj = new Criteria();
-		for (Map.Entry<String, String> entry : criteria.entrySet()) {
-			criteriaObj.and(entry.getKey()).is(entry.getValue());
+		for (Map.Entry<String, List<String>> entry : criteria.entrySet()) {
+			criteriaObj.and(entry.getKey()).in(entry.getValue());
 		}
+
 		Query query = new Query(criteriaObj);
 		query.with(Sort.by(Sort.Order.asc("staticBirdFields.speciesName")));
 		return mongoOps.find(query, Sightings.class);
+
 	}
 }
