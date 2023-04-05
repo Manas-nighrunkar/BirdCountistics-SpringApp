@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 
 @Data
-@Document(collection = "birdsNew2")
+@Document(collection = "birdSightingsPROD")
 public class Sightings {
 
 	StaticBirdFields staticBirdFields;

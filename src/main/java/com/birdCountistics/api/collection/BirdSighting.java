@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Data
-@Document(collection = "birdsNew2")
+@Document(collection = "birdSightingsPROD")
 @Getter
 @Setter
 public class BirdSighting {
